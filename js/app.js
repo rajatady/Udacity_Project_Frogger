@@ -1,67 +1,46 @@
-// Enemies our player must avoid
-var Enemy = function() {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
-
-    this.x = 0;
-    this.y = 0;
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
-    this.sprite = 'images/enemy-bug.png';
-};
-
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
-Enemy.prototype.update = function(dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
-};
-
-// Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
-
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
-
-var Player = function () {
-    this.sprite = "images/char-boy.png";
-    this.x = ctx.width/2;
-    this.y = ctx.height/2;
-};
-
-Player.prototype.update  = function (dt,x,y) {
-    this.x = dt * x;
-    this.y = dt * y;
-};
-
-Player.prototype.handleInput  = function (keyCode) {
-    // this.x = dt * x;
-    // this.y = dt * y;
-};
-
-Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
-
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 
 var allEnemies = [];
-for(var i = 0 ; i < 10; i++) {
-    allEnemies.push(new Enemy());
+for (var i = 1; i <= 3; i++) {
+    var enemy = new Enemy(constraints.enemiesInit.y + (83 * (i - 1)));
+    allEnemies.push(enemy);
 }
+
+//The gems which are used in the game. Each type is a subclass of gem. 
+var orangeGem = new OrangeGem();
+var blueGem = new BlueGem();
+var greenGem = new GreenGem();
+var gems = [];
+gems.push(greenGem, orangeGem, blueGem);
+gems[randomGemGenerator()].update(randomGemRowGenerator());
 
 var player = new Player();
 
 
+var resetGame = function () {
+    if (!constraints.resetGame) {
+        constraints.resetGame = true;
+        setTimeout(function () {
+            player.reset();
+            allEnemies.forEach(function (enemy) {
+                enemy.reset();
+            });
+            gems.forEach(function (gem) {
+                gem.reset();
+            });
+            gems[randomGemGenerator()].update(randomGemRowGenerator());
+            constraints.resetGame = false;
+            constraints.updatingScore = false;
+        }, constraints.resetGameAfter);
+    }
+};
+
+
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
-document.addEventListener('keyup', function(e) {
+document.addEventListener('keyup', function (e) {
     var allowedKeys = {
         37: 'left',
         38: 'up',
@@ -71,3 +50,23 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+
+var score = document.querySelector('#score_data');
+var startGame = document.querySelector('#start_game');
+
+startGame.onclick = function (e) {
+    if (!constraints.gameStarted) {
+        constraints.gameStarted = true;
+        startGame.innerHTML = "Pause Game";
+    } else {
+        
+    }
+};
+console.log(score);
+
+var updateScoreInDOM = function () {
+    score.innerHTML = player.score;
+};
+
+updateScoreInDOM();

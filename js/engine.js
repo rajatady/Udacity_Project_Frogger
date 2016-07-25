@@ -21,13 +21,10 @@ var Engine = (function(global) {
      */
     var doc = global.document,
         win = global.window,
-        canvas = doc.createElement('canvas'),
+        canvas = doc.querySelector('#canvas'),
         ctx = canvas.getContext('2d'),
         lastTime;
 
-    canvas.width = 505;
-    canvas.height = 606;
-    doc.body.appendChild(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -116,7 +113,7 @@ var Engine = (function(global) {
                 'images/grass-block.png'    // Row 2 of 2 of grass
             ],
             numRows = 6,
-            numCols = 5,
+            numCols = 8,
             row, col;
 
         /* Loop through the number of rows and columns we've defined above
@@ -151,6 +148,10 @@ var Engine = (function(global) {
             enemy.render();
         });
 
+        gems.forEach(function (gem) {
+           gem.render();
+        });
+
         player.render();
     }
 
@@ -160,6 +161,7 @@ var Engine = (function(global) {
      */
     function reset() {
         // noop
+        console.log("Reset")
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -171,7 +173,10 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/Gem Blue.png',
+        'images/Gem Green.png',
+        'images/Gem Orange.png'
     ]);
     Resources.onReady(init);
 
@@ -180,4 +185,5 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
+    global.canvas = canvas;
 })(this);

@@ -6,8 +6,28 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <script src="js/resources.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/engine.js"></script>
+
+<main>
+    <canvas id="canvas" width="808" height="606"></canvas>
+</main>
+
+<footer>
+    <div>
+        <span class="score">Score - <span id="score_data"></span></span>
+        <button class="btn" id="start_game">Start Game</button>
+    </div>
+</footer>
+
+<script src="js/resources.js"></script>
+<script src="js/models/helpers.js"></script>
+<script src="js/models/gems.js"></script>
+<script src="js/models/enemy.js"></script>
+<script src="js/models/player.js"></script>
+<script src="js/app.js"></script>
+<script src="js/engine.js"></script>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="js/ripple.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>
