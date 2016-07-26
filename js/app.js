@@ -23,6 +23,8 @@ var resetGame = function () {
     if (!constraints.resetGame) {
         constraints.resetGame = true;
         setTimeout(function () {
+            player.scores.push(player.score);
+            console.log(player.scores);
             player.reset();
             allEnemies.forEach(function (enemy) {
                 enemy.reset();
@@ -32,6 +34,9 @@ var resetGame = function () {
             });
             gems[randomGemGenerator()].update(randomGemRowGenerator());
             constraints.resetGame = false;
+            player.updateScoreElement();
+            player.updateHighestScore();
+            constraints.gameLevel = 1;
             constraints.updatingScore = false;
         }, constraints.resetGameAfter);
     }
@@ -47,28 +52,6 @@ document.addEventListener('keyup', function (e) {
         39: 'right',
         40: 'down'
     };
-
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
-
-var score = document.querySelector('#score_data');
-var startGame = document.querySelector('#start_game');
-
-startGame.onclick = function (e) {
-    if (!constraints.gameStarted) {
-        constraints.gameStarted = true;
-        startGame.innerHTML = "Pause Game";
-        startGame.style.background = "#ed7b09";
-    } else {
-        // 48ed96
-    }
-};
-console.log(score);
-
-var updateScoreInDOM = function () {
-    score.innerHTML = player.score;
-
-};
-
-updateScoreInDOM();

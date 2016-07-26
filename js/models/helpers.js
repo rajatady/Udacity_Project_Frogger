@@ -36,7 +36,7 @@ var randomEnemySpeedGenerator = function () {
 };
 
 var randomXGenerator = function () {
-    return Math.floor(Math.random() * -400 - 50);
+    return Math.floor((Math.random() * -400) - 50);
 };
 
 var gemResources = [

@@ -27,7 +27,7 @@ Enemy.prototype.update = function (dt) {
 
 Enemy.prototype.reset = function () {
     this.x = randomXGenerator();
-    console.log("Rate ",randomEnemySpeedGenerator());
+    console.log("Rate ", randomEnemySpeedGenerator());
     this.movementRate = randomEnemySpeedGenerator();
     // console.log("Enemy");
 };

@@ -5,10 +5,18 @@
 // This class requires an update(), render() and
 // a handleInput() method.
 
+
+//    The Player class
+/*
+ * Properties :- 
+ * 
+ * */
+
 var Player = function () {
     this.sprite = "images/char-boy.png";
     this.state = "stand";
     this.side = "grass";
+    this.scores = [];
     this.reset();
 };
 
@@ -72,7 +80,7 @@ Player.prototype.checkCollision = function () {
 Player.prototype.checkCollisionWithGem = function () {
     for (var i = 0; i < gems.length; i++) {
         var gem = gems[i];
-        if (this.x <= gem.x + 20 && this.x >= gem.x - 20 &&
+        if (this.x <= gem.x + 30 && this.x >= gem.x - 30 &&
             this.y <= gem.y - 40) {
             if (!constraints.updatingScore) {
                 constraints.updatingScore = true;
@@ -82,6 +90,19 @@ Player.prototype.checkCollisionWithGem = function () {
             }
         }
     }
+};
+
+Player.prototype.updateScoreElement = function () {
+    scoreElement.innerHTML = this.score;
+};
+
+Player.prototype.updateHighestScore = function () {
+    highestScoreElement.innerHTML = this.getHighestScore();
+};
+
+Player.prototype.getHighestScore = function () {
+    // console.log("Highest Score - ",this.scores.sort());
+    return this.scores.length > 0 ? this.scores.sort().slice(-1) : 0;
 };
 
 Player.prototype.checkStonePathCrossingStatus = function () {
@@ -101,7 +122,6 @@ Player.prototype.checkStonePathCrossingStatus = function () {
             gems[randomGemGenerator()].update(randomGemRowGenerator());
         }
     }
-    // console.log(constraints.updatingScore, this.y);
 };
 
 Player.prototype.reset = function () {
@@ -110,16 +130,18 @@ Player.prototype.reset = function () {
     this.y = constraints.playerInit.y;
     this.score = 0;
     this.side = "grass";
-    // console.log("Player ");
+
 };
 
 Player.prototype.updateScore = function (gemScore) {
+    // Set timeout to handle the concurrency which arises due to the player reaching the other end at the same y position as the gem.
+    // This leads to a race condition. Settimeout fixes the issue.
     setTimeout(function () {
         player.score += gemScore;
         constraints.updatingScore = false;
-        constraints.gameLevel = Math.floor(player.score / 200);
+        constraints.gameLevel = Math.floor(player.score / 200) + 1;
         console.log("Score - ", player.score);
-        updateScoreInDOM();
+        player.updateScoreElement();
     }, 0);
 };
 
