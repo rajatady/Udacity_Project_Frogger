@@ -59,14 +59,16 @@ startGame.onclick = function (e) {
     if (!constraints.gameStarted) {
         constraints.gameStarted = true;
         startGame.innerHTML = "Pause Game";
+        startGame.style.background = "#ed7b09";
     } else {
-        
+        // 48ed96
     }
 };
 console.log(score);
 
 var updateScoreInDOM = function () {
     score.innerHTML = player.score;
+
 };
 
 updateScoreInDOM();

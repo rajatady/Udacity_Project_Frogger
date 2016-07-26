@@ -27,12 +27,12 @@ var constraints = {
         green: 25
     },
     updatingScore: false,
-    gameLevel : 1,
-    gameStarted : false
+    gameLevel: 1,
+    gameStarted: false
 };
 
 var randomEnemySpeedGenerator = function () {
-    return (Math.floor((Math.random() * 100) + 300 * constraints.gameLevel));
+    return (Math.floor((Math.random() * 200 * constraints.gameLevel) + (150)));
 };
 
 var randomXGenerator = function () {
