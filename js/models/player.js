@@ -8,8 +8,13 @@
 
 //    The Player class
 /*
- * Properties :- 
- * 
+ * PROPERTIES :-
+ *  sprite, side, scores, globalConstraints, score
+ *
+ *  METHODS :-
+ *  update, move, render, reset, updateScoreElement, updateHighestScoreElement, checkCollision
+ *
+ *
  * */
 
 var Player = function () {
@@ -17,77 +22,133 @@ var Player = function () {
     this.state = "stand";
     this.side = "grass";
     this.scores = [];
+    this.constraints = {
+        init: {
+            x: 0,
+            y: 420,
+            score: 0
+        },
+        gamePlay: {
+            steps: 40
+        }
+    };
     this.reset();
 };
 
-Player.prototype.update = function (dt) {
-    this.move();
+/********************************** UPDATED CODE *******************************************************/
+/*
+ *  UPDATE -
+ *  The update method only checks for the player position instead of moving the player. This increases efficiency
+ *  of the program a bit.
+ *
+ * */
+
+Player.prototype.update = function (entities) {
+    this.checkCollision(entities);
+    this.checkStonePathCrossingStatus();
 };
 
+/********************************** UPDATED CODE *******************************************************/
+/*
+ *  UPDATE -
+ *  The move method now uses switch instead of if conditional. The globalConstraints to check player positions have been
+ *  moved to update so that the player's position is tracked even if the player is not moving.
+ *
+ * */
 Player.prototype.move = function (dt) {
     if (!this.hasCollided) {
-        if (this.state == "move_right") {
-            if (this.x + constraints.playerStep <= constraints.rightEdge) {
-                this.x = this.x + constraints.playerStep;
-                this.state = "stand";
-            }
-        }
-        else if (this.state == "move_left") {
-            if (this.x - constraints.playerStep >= constraints.leftEdge) {
-                this.x = this.x - constraints.playerStep;
-                this.state = "stand";
-            }
-        }
-        if (this.state == "move_up") {
-            if (this.y - constraints.playerStep > constraints.topEdge) {
-                this.y = this.y - constraints.playerStep;
-                this.state = "stand";
-            }
-        }
-        else if (this.state == "move_down") {
-            if (this.y + constraints.playerStep <= constraints.bottomEdge) {
-                this.y = this.y + constraints.playerStep;
-                this.state = "stand";
-            }
-        } else if (this.state = "stand") {
-            this.checkCollision();
-            this.checkCollisionWithGem();
-            this.checkStonePathCrossingStatus();
-        }
-    }
-    // console.log(
-    //     "Player x - ", this.x,
-    //     "Player y - ", this.y,
-    //     "Top Edge - ", constraints.topEdge,
-    //     "Bottom Edge - ", constraints.bottomEdge,
-    //     "Left Edge - ", constraints.leftEdge,
-    //     "Right Edge - ", constraints.rightEdge
-    // );
-};
+        console.log(this.state);
+        switch (this.state) {
+            case "move_right" :
+                if (this.x + this.constraints.gamePlay.steps <= globalConstraints.rightEdge) {
+                    this.x = this.x + this.constraints.gamePlay.steps;
+                    this.state = "stand";
+                }
+                break;
 
-Player.prototype.checkCollision = function () {
-    for (var i = 0; i < allEnemies.length; i++) {
-        var enemy = allEnemies[i];
-        if (this.x <= enemy.x + 50 && this.x >= enemy.x - 30 &&
-            this.y >= enemy.y - 40 && this.y <= enemy.y + 40) {
-            this.hasCollided = true;
-            // console.log("Collision");
-            resetGame();
+            case "move_left" :
+                if (this.x - this.constraints.gamePlay.steps >= globalConstraints.leftEdge) {
+                    this.x = this.x - this.constraints.gamePlay.steps;
+                    this.state = "stand";
+                }
+                break;
+
+            case "move_up" :
+                if (this.y - this.constraints.gamePlay.steps > globalConstraints.topEdge) {
+                    this.y = this.y - this.constraints.gamePlay.steps;
+                    this.state = "stand";
+                }
+                break;
+
+
+            case "move_down":
+                if (this.y + this.constraints.gamePlay.steps <= globalConstraints.bottomEdge) {
+                    this.y = this.y + this.constraints.gamePlay.steps;
+                    this.state = "stand";
+                }
+                break;
         }
     }
 };
 
-Player.prototype.checkCollisionWithGem = function () {
-    for (var i = 0; i < gems.length; i++) {
-        var gem = gems[i];
-        if (this.x <= gem.x + 30 && this.x >= gem.x - 30 &&
-            this.y <= gem.y - 40) {
-            if (!constraints.updatingScore) {
-                constraints.updatingScore = true;
-                this.updateScore(gem.points);
-                // console.log("Found Gem", gem);
-                gem.reset();
+/********************************** UPDATED CODE *******************************************************/
+/*
+ *  UPDATE -
+ *  The checkCollision now is much more abstract. The actual condition to check for collision and the
+ *  action to be taken has been moved to the entities themselves. This way plugging in  a new entity is as simple
+ *  as defining the enitity with 2 methods checkCollision and onCollision and then adding the enitiy to the
+ *  entities array in engine.js from where the player.update() is called.
+ *
+ * */
+
+Player.prototype.checkCollision = function (entities) {
+    for (var i = 0; i < entities.length; i++) {
+        var entity = entities[i];
+        if (this.x <= entity.x + 50 && this.x >= entity.x - 30) {
+            if (entity.checkCollision(this)) {
+                entity.onCollision(this);
             }
+        }
+    }
+};
+
+/********************************** DELETED CODE *******************************************************/
+/*
+ *  DELETE -
+ *  The checkCollisionWithGem method has been removed in favour of more robust checkCollision
+ *
+ * */
+//
+// Player.prototype.checkCollisionWithGem = function () {
+//     for (var i = 0; i < gems.length; i++) {
+//         var gem = gems[i];
+//         if (this.x <= gem.x + 50 && this.x >= gem.x - 30 &&
+//             this.y <= gem.y - 50 && this.y <= gem.y + 30) {
+//             if (!globalConstraints.updatingScore) {
+//                 globalConstraints.updatingScore = true;
+//                 this.updateScore(gem.points);
+//                 gem.reset();
+//             }
+//         }
+//     }
+// };
+
+Player.prototype.checkStonePathCrossingStatus = function () {
+    if (this.side === "grass" && this.y <= -20) {
+        if (!globalConstraints.updatingScore) {
+            globalConstraints.updatingScore = true;
+            this.updateScore(50);
+            console.log("Reached water");
+            console.log(this.x, this.y);
+            this.side = "water";
+        }
+    } else if (this.side === "water" && this.y >= 260) {
+        if (!globalConstraints.updatingScore) {
+            globalConstraints.updatingScore = true;
+            this.updateScore(50);
+            console.log("Reached grass");
+            this.side = "grass";
+            gems[Math.floor(Math.random() * gems.length)].update(Math.floor(Math.random() * 8));
         }
     }
 };
@@ -101,48 +162,36 @@ Player.prototype.updateHighestScore = function () {
 };
 
 Player.prototype.getHighestScore = function () {
-    // console.log("Highest Score - ",this.scores.sort());
     return this.scores.length > 0 ? this.scores.sort().slice(-1) : 0;
 };
 
-Player.prototype.checkStonePathCrossingStatus = function () {
-    if (this.side == "grass" && this.y <= -20) {
-        if (!constraints.updatingScore) {
-            constraints.updatingScore = true;
-            this.updateScore(50);
-            console.log("Reached water");
-            this.side = "water";
-        }
-    } else if (this.side == "water" && this.y >= 260) {
-        if (!constraints.updatingScore) {
-            constraints.updatingScore = true;
-            this.updateScore(50);
-            console.log("Reached grass");
-            this.side = "grass";
-            gems[randomGemGenerator()].update(randomGemRowGenerator());
-        }
-    }
-};
 
 Player.prototype.reset = function () {
     this.hasCollided = false;
-    this.x = constraints.playerInit.x;
-    this.y = constraints.playerInit.y;
-    this.score = 0;
+    this.x = this.constraints.init.x;
+    this.y = this.constraints.init.y;
+    this.score = this.constraints.init.score;
     this.side = "grass";
-
 };
 
+/********************************** UPDATED CODE *******************************************************/
+/*
+ *  UPDATE -
+ *  The settimeout function scope now accepts self as a parameter which in turn is bound to this, the player object
+ *  in the current game.
+ *
+ * */
 Player.prototype.updateScore = function (gemScore) {
-    // Set timeout to handle the concurrency which arises due to the player reaching the other end at the same y position as the gem.
+    // Set timeout to handle the concurrency which arises due to the player reaching the other
+    // end at the same y position as the gem.
     // This leads to a race condition. Settimeout fixes the issue.
     setTimeout(function () {
-        player.score += gemScore;
-        constraints.updatingScore = false;
-        constraints.gameLevel = Math.floor(player.score / 200) + 1;
-        console.log("Score - ", player.score);
-        player.updateScoreElement();
-    }, 0);
+        self.score += gemScore;
+        globalConstraints.updatingScore = false;
+        globalConstraints.gameLevel = Math.floor(player.score / 200) + 1;
+        console.log("Score - ", self.score);
+        self.updateScoreElement();
+    }(self = this), 0);
 };
 
 
@@ -162,8 +211,9 @@ Player.prototype.handleInput = function (keyCode) {
 
         case "down":
             this.state = "move_down";
-
     }
+
+    this.move();
 };
 
 Player.prototype.render = function () {

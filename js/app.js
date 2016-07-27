@@ -4,7 +4,7 @@
 
 var allEnemies = [];
 for (var i = 1; i <= 3; i++) {
-    var enemy = new Enemy(constraints.enemiesInit.y + (83 * (i - 1)));
+    var enemy = new Enemy((83 * (i - 1)));
     allEnemies.push(enemy);
 }
 
@@ -14,14 +14,17 @@ var blueGem = new BlueGem();
 var greenGem = new GreenGem();
 var gems = [];
 gems.push(greenGem, orangeGem, blueGem);
-gems[randomGemGenerator()].update(randomGemRowGenerator());
+
+
+gems[Math.floor(Math.random() * gems.length)].update(Math.floor(Math.random() * 8));
 
 var player = new Player();
 
 
+
 var resetGame = function () {
-    if (!constraints.resetGame) {
-        constraints.resetGame = true;
+    if (!globalConstraints.resetGame) {
+        globalConstraints.resetGame = true;
         setTimeout(function () {
             player.scores.push(player.score);
             console.log(player.scores);
@@ -32,13 +35,13 @@ var resetGame = function () {
             gems.forEach(function (gem) {
                 gem.reset();
             });
-            gems[randomGemGenerator()].update(randomGemRowGenerator());
-            constraints.resetGame = false;
+            gems[Math.floor(Math.random() * gems.length)].update(Math.floor(Math.random() * 8));
+            globalConstraints.resetGame = false;
             player.updateScoreElement();
             player.updateHighestScore();
-            constraints.gameLevel = 1;
-            constraints.updatingScore = false;
-        }, constraints.resetGameAfter);
+            globalConstraints.gameLevel = 1;
+            globalConstraints.updatingScore = false;
+        }, globalConstraints.resetGameAfter);
     }
 };
 

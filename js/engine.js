@@ -87,11 +87,19 @@ var Engine = (function (global) {
      * the data/properties related to the object. Do your drawing in your
      * render methods.
      */
+
+    /********************************** UPDATED CODE *******************************************************/
+    /*
+     *  UPDATE -
+     *  The player.update method now takes all the entities that can collide with the player as argument.
+     *
+     * */
+
     function updateEntities(dt) {
         allEnemies.forEach(function (enemy) {
-            enemy.update(dt);
+            enemy.update(dt,player);
         });
-        player.update();
+        player.update(allEnemies.concat(gems));
     }
 
     /* This function initially draws the "game level", it will then call
